@@ -11,10 +11,12 @@ class WeatherService {
 
   WeatherService({required this.apiKey});
 
-  Future<Weather> getWeather({required String? longitude,
-    required String? latitude}) async {
-    final url = "weather?lat=$latitude&lon=$longitude&appid=b38484b8aab97fe2666f840aafb3c191";
-    final response = await http.get(Uri.parse(BASE_URL+url));
+  Future<Weather> getWeather({
+    required String? longitude,
+    required String? latitude,
+  }) async {
+    final url = "weather?lat=$latitude&lon=$longitude&appid=$apiKey";
+    final response = await http.get(Uri.parse(BASE_URL + url));
 
     if (response.statusCode == 200) {
       return Weather.fromJson(jsonDecode(response.body));
@@ -24,22 +26,27 @@ class WeatherService {
   }
 
   Future<Position> getPosition() async {
-    //get permission from user
+    bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!isLocationServiceEnabled) {
+      throw Exception("Location services are disabled. Please enable them.");
+    }
+
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
 
-    //fetch the current location
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception("Location permissions are permanently denied.");
+    }
+
     Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      desiredAccuracy: LocationAccuracy.best,
+      forceAndroidLocationManager: true,
     );
 
-
- 
-
-    //extract the city name from the first placemarks
-
+    print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
     return position;
   }
 }

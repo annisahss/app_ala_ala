@@ -12,19 +12,20 @@ class WeatherPage extends StatefulWidget {
 }
 
 class _WeatherPageState extends State<WeatherPage> {
-  // API key
   final _weatherService = WeatherService(
     apiKey: 'b38484b8aab97fe2666f840aafb3c191',
   );
   Weather? _weather;
 
-  // Fetch the weather data
   _fetchWeatherData() async {
     try {
       final Position positioned = await _weatherService.getPosition();
       String latitude = positioned.latitude.toString();
-      String longitude =  positioned.longitude.toString();
-      final Weather weather = await _weatherService.getWeather(latitude: latitude, longitude: longitude);
+      String longitude = positioned.longitude.toString();
+      final Weather weather = await _weatherService.getWeather(
+        latitude: latitude,
+        longitude: longitude,
+      );
       setState(() {
         _weather = weather;
       });
@@ -33,9 +34,8 @@ class _WeatherPageState extends State<WeatherPage> {
     }
   }
 
-  // Weather animations
   String getWeatherAnimation(String? mainCondition) {
-    if (mainCondition == null) return 'assets/sunny.json'; // default to sunny
+    if (mainCondition == null) return 'assets/sunny.json';
 
     switch (mainCondition.toLowerCase()) {
       case 'clouds':
@@ -72,16 +72,13 @@ class _WeatherPageState extends State<WeatherPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // City name
             Text(
               _weather?.cityName ?? 'Loading city...',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
 
-            // Animation
             Lottie.asset(getWeatherAnimation(_weather?.mainCondition)),
 
-            // Temperature (Converted from Kelvin to Celsius)
             Text(
               _weather != null
                   ? '${(_weather!.temperature - 273.15).toStringAsFixed(1)}°C'
@@ -89,10 +86,17 @@ class _WeatherPageState extends State<WeatherPage> {
               style: TextStyle(fontSize: 26, fontWeight: FontWeight.w500),
             ),
 
-            // Weather condition
             Text(
               _weather?.mainCondition ?? "",
               style: TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+            ),
+
+            // Displaying Humidity
+            Text(
+              _weather != null
+                  ? 'Humidity: ${_weather!.humidity}%'
+                  : 'Loading humidity...',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
             ),
           ],
         ),
