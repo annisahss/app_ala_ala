@@ -8,7 +8,7 @@ class Weather {
     required this.cityName,
     required this.temperature,
     required this.mainCondition,
-    required this.humidity, // Added to constructor
+    required this.humidity, 
   });
 
   factory Weather.fromJson(Map<String, dynamic> json) {
