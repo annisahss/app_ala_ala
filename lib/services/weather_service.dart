@@ -1,5 +1,4 @@
-import 'package:flutter/gestures.dart';
-import 'package:geocoding/geocoding.dart';
+
 import 'package:geolocator/geolocator.dart';
 import '../models/weather_model.dart';
 import 'package:http/http.dart' as http;
